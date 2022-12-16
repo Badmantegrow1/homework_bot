@@ -9,7 +9,6 @@ import time
 
 from dotenv import load_dotenv
 
-
 load_dotenv()
 
 logging.basicConfig(
@@ -18,7 +17,6 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(filename)s - %(message)s",
 )
 
-
 PRACTICUM_TOKEN = os.getenv('PRACTICUM_TOKEN')
 TELEGRAM_TOKEN = os.getenv('TELEGRAM_TOKEN')
 TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
@@ -26,7 +24,6 @@ TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 RETRY_PERIOD = 600
 ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
 HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
-
 
 HOMEWORK_VERDICTS = {
     'approved': 'Работа проверена: ревьюеру всё понравилось. Ура!',
@@ -70,11 +67,10 @@ def send_message(bot, message):
     """Отсылаем сообщение."""
     try:
         bot.send_message(chat_id=TELEGRAM_CHAT_ID, text=message)
-    except Exception:
-        logging.error('Ошибка при отправке сообщения')
+    except Exception as error:
+        logging.error({error})
     else:
         logging.debug('Сообщение успешно отправлено')
-    pass
 
 
 def get_api_answer(timestamp):
@@ -87,40 +83,39 @@ def get_api_answer(timestamp):
         logging.info('Ответ на запрос к API: 200 OK')
         return response.json()
     except requests.exceptions.RequestException:
-        message = f'Ошибка при запросе к API: {response.status_code}'
-        logging.error(message)
-        raise requests.exceptions.RequestException(message)
+        raise requests.exceptions.RequestException()
 
 
 def check_response(response):
     """Проверяем ответ API на соответствие документации."""
-    if isinstance(response, dict):
-        if 'homeworks' in response:
-            if isinstance(response.get('homeworks'), list):
-                return response.get('homeworks')
-            raise TypeError('API возвращает не список.')
-        raise KeyError('Не найден ключ homeworks.')
-    raise TypeError('API возвращает не словарь.')
+    if not isinstance(response, dict):
+        raise TypeError()
+    if not 'homeworks' in response:
+        raise KeyError()
+    if isinstance(response.get('homeworks'), list):
+        return response.get('homeworks')
+    else:
+        raise TypeError('API возвращает не список.')
 
 
 def parse_status(homework):
     """Проверка статуса домашней работы."""
-    if isinstance(homework, dict):
-        if 'status' in homework:
-            if 'homework_name' in homework:
-                if isinstance(homework.get('status'), str):
-                    homework_name = homework.get('homework_name')
-                    homework_status = homework.get('status')
-                    if homework_status in HOMEWORK_VERDICTS:
-                        verdict = HOMEWORK_VERDICTS.get(homework_status)
-                        return ('Изменился статус проверки работы '
-                                f'"{homework_name}". {verdict}')
-                    else:
-                        raise Exception("Неизвестный статус работы")
-                raise TypeError('status не str.')
-            raise KeyError('В ответе нет ключа homework_name.')
-        raise KeyError('В ответе нет ключа status.')
-    raise KeyError('API возвращает не словарь.')
+    if not isinstance(homework, dict):
+        raise KeyError()
+    if not 'status' in homework:
+        raise KeyError()
+    if not 'homework_name' in homework:
+        raise KeyError()
+    if not isinstance(homework.get('status'), str):
+        raise TypeError('status не str.')
+    homework_name = homework.get('homework_name')
+    homework_status = homework.get('status')
+    if homework_status in HOMEWORK_VERDICTS:
+        verdict = HOMEWORK_VERDICTS.get(homework_status)
+        return ('Изменился статус проверки работы '
+                f'"{homework_name}". {verdict}')
+    else:
+        raise Exception("Неизвестный статус работы")
 
 
 if __name__ == '__main__':
