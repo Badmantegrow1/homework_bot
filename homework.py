@@ -107,7 +107,7 @@ def parse_status(homework):
     if not 'homework_name' in homework:
         raise KeyError()
     if not isinstance(homework.get('status'), str):
-        raise TypeError('status не str.')
+        raise TypeError()
     homework_name = homework.get('homework_name')
     homework_status = homework.get('status')
     if homework_status in HOMEWORK_VERDICTS:
