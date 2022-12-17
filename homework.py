@@ -90,8 +90,8 @@ def check_response(response):
     """Проверяем ответ API на соответствие документации."""
     if not isinstance(response, dict):
         raise TypeError()
-    if not 'homeworks' in response:
-        raise KeyError()
+    if 'homeworks' in response:
+        raise KeyError('Не найден ключ homeworks.')
     if isinstance(response.get('homeworks'), list):
         return response.get('homeworks')
     else:
@@ -102,10 +102,10 @@ def parse_status(homework):
     """Проверка статуса домашней работы."""
     if not isinstance(homework, dict):
         raise KeyError()
-    if not 'status' in homework:
-        raise KeyError()
+    if 'status' in homework:
+        raise KeyError('В ответе нет ключа status.')
     if not 'homework_name' in homework:
-        raise KeyError()
+        raise KeyError('В ответе нет ключа homework_name.')
     if not isinstance(homework.get('status'), str):
         raise TypeError()
     homework_name = homework.get('homework_name')
