@@ -92,10 +92,10 @@ def check_response(response):
         raise TypeError()
     if 'homeworks' not in response:
         raise KeyError()
-    if isinstance(response.get('homeworks'), list):
-        return response.get('homeworks')
+    if not isinstance(response.get('homeworks'), list):
+        raise TypeError()
     else:
-        raise TypeError('API возвращает не список.')
+        return response.get('homeworks')
 
 
 def parse_status(homework):
