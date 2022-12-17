@@ -115,7 +115,7 @@ def parse_status(homework):
         return ('Изменился статус проверки работы '
                 f'"{homework_name}". {verdict}')
     else:
-        raise Exception("Неизвестный статус работы")
+        raise Exception('Неизвестный статус работы')
 
 
 if __name__ == '__main__':
