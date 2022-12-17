@@ -104,7 +104,7 @@ def parse_status(homework):
         raise KeyError()
     if 'status' in homework:
         raise KeyError('В ответе нет ключа status.')
-    if not 'homework_name' in homework:
+    if 'homework_name' in homework:
         raise KeyError('В ответе нет ключа homework_name.')
     if not isinstance(homework.get('status'), str):
         raise TypeError()
