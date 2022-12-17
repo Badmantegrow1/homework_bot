@@ -83,9 +83,9 @@ def get_api_answer(timestamp):
             response.raise_for_status()
         logging.info('Ответ на запрос к API: 200 OK')
         return response.json()
-    except requests.exceptions.RequestException:
+    except requests.RequestException:
         message = f'Ошибка при запросе к API: {response.status_code}'
-        raise requests.exceptions.RequestException(message)
+        raise requests.RequestException(message)
 
 
 def check_response(response):
