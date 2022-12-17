@@ -75,6 +75,7 @@ def send_message(bot, message):
 
 def get_api_answer(timestamp):
     """Делаем запрос на сервер ЯП."""
+    global response
     params = {'from_date': timestamp}
     try:
         response = requests.get(ENDPOINT, headers=HEADERS, params=params)
@@ -83,7 +84,8 @@ def get_api_answer(timestamp):
         logging.info('Ответ на запрос к API: 200 OK')
         return response.json()
     except requests.exceptions.RequestException:
-        raise requests.exceptions.RequestException()
+        message = f'Ошибка при запросе к API: {response.status_code}'
+        raise requests.exceptions.RequestException(message)
 
 
 def check_response(response):
